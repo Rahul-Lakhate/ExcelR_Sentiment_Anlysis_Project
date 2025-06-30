@@ -3,7 +3,7 @@ import joblib
 import re
 import os
 
-# ========== Load Model & Vectorizer ==========
+# Load Model & Vectorizer
 @st.cache_resource
 def load_model():
     model_path = os.path.join(os.path.dirname(__file__), 'model.pkl')
@@ -14,12 +14,12 @@ def load_model():
 
 model, vectorizer = load_model()
 
-# ========== Text Cleaning Function ==========
+# Text Cleaning Function
 def clean_text(text):
     text = re.sub(r"[^a-zA-Z]", " ", str(text).lower())
     return text
 
-# ========== Predict Function ==========
+# Predict Function 
 def predict_sentiment(text):
     cleaned = clean_text(text)
     vectorized = vectorizer.transform([cleaned])
@@ -27,7 +27,7 @@ def predict_sentiment(text):
     label_map = {0: "Negative", 1: "Neutral", 2: "Positive"}
     return label_map.get(prediction, "Unknown")
 
-# ========== Streamlit UI ==========
+# Streamlit UI
 st.set_page_config(page_title="Sentiment Analyzer", layout="centered")
 st.title("🧠 Sentiment Analysis App")
 st.markdown("Enter a review below to analyze its sentiment:")
