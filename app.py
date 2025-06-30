@@ -1,32 +1,42 @@
 import streamlit as st
 import joblib
 import re
-from textblob import TextBlob
+import os
 
-model = joblib.load('model.pkl')
-vectorizer = joblib.load('vectorizer.pkl')
+# ========== Load Model & Vectorizer ==========
+@st.cache_resource
+def load_model():
+    model_path = os.path.join(os.path.dirname(__file__), 'model.pkl')
+    vectorizer_path = os.path.join(os.path.dirname(__file__), 'vectorizer.pkl')
+    model = joblib.load(model_path)
+    vectorizer = joblib.load(vectorizer_path)
+    return model, vectorizer
 
+model, vectorizer = load_model()
+
+# ========== Text Cleaning Function ==========
 def clean_text(text):
-    text = re.sub(r"[^a-zA-Z]", " ", text.lower())
+    text = re.sub(r"[^a-zA-Z]", " ", str(text).lower())
     return text
 
-def get_sentiment_label(pred):
-    mapping = {0: "Negative", 1: "Neutral", 2: "Positive"}
-    return mapping.get(pred, "Unknown")
+# ========== Predict Function ==========
+def predict_sentiment(text):
+    cleaned = clean_text(text)
+    vectorized = vectorizer.transform([cleaned])
+    prediction = model.predict(vectorized)[0]
+    label_map = {0: "Negative", 1: "Neutral", 2: "Positive"}
+    return label_map.get(prediction, "Unknown")
 
- 
-st.title("Sentiment Analysis App")
-st.write("Enter a product review to analyze its sentiment:")
+# ========== Streamlit UI ==========
+st.set_page_config(page_title="Sentiment Analyzer", layout="centered")
+st.title("🧠 Sentiment Analysis App")
+st.markdown("Enter a review below to analyze its sentiment:")
 
-user_input = st.text_area("Your Review", "")
+user_input = st.text_area("💬 Your Review", height=150)
 
 if st.button("Analyze"):
-    cleaned = clean_text(user_input)
-    vect_text = vectorizer.transform([cleaned])
-    prediction = model.predict(vect_text)[0]
-    sentiment = get_sentiment_label(prediction)
-    st.success(f"Predicted Sentiment: **{sentiment}**")
-
-model = joblib.load(os.path.join(os.path.dirname(__file__), 'model.pkl'))
-vectorizer = joblib.load(os.path.join(os.path.dirname(__file__), 'vectorizer.pkl'))
-
+    if user_input.strip() == "":
+        st.warning("Please enter some text to analyze.")
+    else:
+        result = predict_sentiment(user_input)
+        st.success(f"Predicted Sentiment: **{result}**")
