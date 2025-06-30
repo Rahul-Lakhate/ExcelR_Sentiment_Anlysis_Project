@@ -1,6 +1,7 @@
 streamlit
 scikit-learn
 xgboost
-textblob
 joblib
-
+textblob
+pandas
+openpyxl
