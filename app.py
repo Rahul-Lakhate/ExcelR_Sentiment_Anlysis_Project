@@ -4,7 +4,7 @@ import re
 import os
 
 # Load Model & Vectorizer
-@st.cache_resource
+#@st.cache_resource
 def load_model():
     model_path = os.path.join(os.path.dirname(__file__), 'model.pkl')
     vectorizer_path = os.path.join(os.path.dirname(__file__), 'vectorizer.pkl')
