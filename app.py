@@ -26,3 +26,7 @@ if st.button("Analyze"):
     prediction = model.predict(vect_text)[0]
     sentiment = get_sentiment_label(prediction)
     st.success(f"Predicted Sentiment: **{sentiment}**")
+
+model = joblib.load(os.path.join(os.path.dirname(__file__), 'model.pkl'))
+vectorizer = joblib.load(os.path.join(os.path.dirname(__file__), 'vectorizer.pkl'))
+
